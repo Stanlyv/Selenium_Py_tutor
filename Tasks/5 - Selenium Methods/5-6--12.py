@@ -3,9 +3,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-with (webdriver.Chrome() as browser):
-    browser.get("https://parsinger.ru/selenium/5.6/1/index.html")
-    entry_cookies = [{'name': 'KXIYO4xMrWh', 'value': 'ibyAZPfXAsPqptPaNyL'},
+entry_cookies = [{'name': 'KXIYO4xMrWh', 'value': 'ibyAZPfXAsPqptPaNyL'},
                      {'name': '0OIJ4G4ZLzK', 'value': 'kJcPzQu5Jr8ELK'},
                      {'name': 'O1C4sd3RK5udnZ6P', 'value': '4mYYxbfgnIvuip2ry58EQ'},
                      {'name': 'AUZgaLJ4Y', 'value': 'FLSZvYrkf1E57YMUkdD'},
@@ -105,5 +103,31 @@ with (webdriver.Chrome() as browser):
                      {'name': 'hbFS4sDwQh', 'value': 's4zWhushscPPDDFqT5tzPJqix0HMjjG'},
                      {'name': 'b9wAAVSyw4V2LQ', 'value': 'SDkldbPnf6NjLZSxWZV7CpCW'},
                      {'name': 'jFhFn0wPFRG', 'value': 'RYqOrD21ZN7aUeBXqISZ2afocnvvwd6hw3BXUj1wEm0mUO'}]
+age = 0
+skills = 0
+cookie_counter = -1
+cookie_special = 0
 
-    #in progress
+with (webdriver.Chrome() as browser):
+    browser.get("https://parsinger.ru/selenium/5.6/1/index.html")
+
+    for cookie in entry_cookies:
+        browser.add_cookie(cookie)
+        cookie_counter += 1
+        browser.refresh()
+        age_element = browser.find_element(By.ID, "age")
+        age_person = int(age_element.text.split("Age: ")[1])
+        skills_element = browser.find_element(By.ID, "skillsList").find_elements(By.TAG_NAME, "li")
+        skill_person = len(skills_element)
+        if age >= age_person:
+            if skills >= skill_person:
+                age = age_person
+                skills = skill_person
+                cookie_special = cookie_counter
+        browser.delete_all_cookies()
+
+    browser.add_cookie(entry_cookies[cookie_special])
+    browser.refresh()
+    cookies_to_result = browser.get_cookies()
+    for cookie in cookies_to_result:
+        print(cookie["value"])
